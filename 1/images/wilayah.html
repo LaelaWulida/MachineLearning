@@ -1,0 +1,190 @@
+<html>
+  <head>
+    <script src="../module.js"></script>
+    <script src="../courseimages/jquery.js"></script>
+    <script>
+		let targetLabel='I';
+		let model;
+		let backgroundImage;
+		let status;
+		let t1 = 0.1; // attack time in seconds
+		let l1 = 0.7; // attack level 0.0 to 1.0
+		let t2 = 0.3; // decay time in seconds
+		let l2 = 0.1; // decay level  0.0 to 1.0
+		let env; //envelope untuk mengontrol volume
+		let triOsc;
+		
+		
+		
+		
+		function preload() //untuk memuat dua gambar{
+			backgroundImageSket = loadImage('gambarsket.jpg');
+			backgroundImagePeta = loadImage('gambarpeta.jpg');
+		}
+		
+		// menentukan environment properties, hanya dipanggil 1 kali saat program dimulai
+		function setup(){
+			status = "collecting";
+			backgroundImage = backgroundImageSket;
+			let cnv = createCanvas(800,600); //membuat kanvas
+			backgroundImage.width = 1100; //resize bg
+			backgroundImage.height = 1000;
+			image(backgroundImage,0,0);
+			background(backgroundImage);
+			
+			text('tap to play', 20, 20);
+			cnv.mousePressed(playSound);
+
+			env = new p5.Envelope(t1, l1, t2, l2);
+			triOsc = new p5.Oscillator('triangle');
+			
+			const options = {
+				input : ['x','y'],
+				output: ['label'],
+				task  : 'classification',
+				debug  : true
+			
+			};
+			model = ml5.neuralNetwork(options,ready);
+			console.log(model);
+		}
+		
+		function playSound() {
+			// memulai osilator memastikan audio diaktifkan.
+			triOsc.start();
+			env.play(triOsc);
+		}
+		
+		function ready(){console.log('model is ready')}
+		
+      
+		function keyPressed(){
+		//baru
+			if (key == 't') {
+				status = 'training';
+				console.log('starting trining');
+				model.normalizeData();
+				let options = {
+					epochs: 100
+				}
+				model.train(options, training, finish);
+			} else if (key == 's') {
+				model.saveData('mouse-notes');
+			}else {
+				targetLabel = key.toUpperCase();
+			}
+		}
+	
+	  
+		function mousePressed(){
+			let x = mouseX;
+			let y = mouseY;
+			ellipse(x,y,30);
+			textAlign(CENTER,CENTER);
+			textSize(15);
+			text(targetLabel,x,y);
+			if (status=='training'){
+				console.log(status);
+				model.classify({x:mouseX,y:mouseY},getResult);
+			}
+			if (status=='collecting'){
+				let target = {
+					label: targetLabel
+				}
+				console.log(status);
+				model.addData({x: mouseX, y: mouseY},{label: targetLabel});
+				
+			}else {
+				model.classify({x:mouseX,y:mouseY},getResult);
+				console.log(status);
+			}
+		}
+		
+		function training(){
+			status = "training";
+			model.normalizeData(); //normalisasi
+			const options = {
+				epochs : 100
+			}
+			model.train(options, ongoing, finish);
+		}
+		
+		function ongoing(){}
+		function finish(){console.log('training is finished')}
+		
+		function predict(){
+			status = "predicting";
+		}
+		
+		function getResult(error, result){
+			
+			if (error){
+				console.error(error);
+				return;
+			}
+			console.log(result[0].label);
+			stroke(0);
+			fill('red')
+			let x = mouseX;
+			let y = mouseY;
+			ellipse(x,y,30);
+			fill(0);
+			noStroke();
+			textAlign(CENTER,CENTER);
+			textSize(15);
+			text(result[0].label,mouseX,mouseY);
+			
+		}
+		
+		function peta(){
+			backgroundImage = backgroundImagePeta;
+			backgroundImage.width = 1100; //resize bg
+			backgroundImage.height = 1000;
+			background(backgroundImage);
+		}
+		function sket(){
+			backgroundImage = backgroundImageSket;
+			backgroundImage.width = 1100; //resize bg
+			backgroundImage.height = 1000;
+			background(backgroundImage);
+		}
+		
+		function dataLoaded() {
+			console.log(model.data);
+			let data = model.data.data.raw;
+			for (let i = 0; i < data.length; i++) {
+				let x = mouseX;
+				let y = mouseY;
+				stroke(0);
+				noFill();
+				ellipse(x,y,30);
+				fill(0);
+				noStroke();
+				textAlign(CENTER, CENTER);
+				text(result[0].label,mouseX,mouseY);
+			}
+			status = 'training';
+			console.log('starting training');
+			model.normalizeData();
+			let options = {
+			epochs: 100
+			}
+			model.train(options, training, finishs);
+		}
+		
+    </script>
+  </head>
+  
+  <body>
+		<button style="background-color:#80ced6; border-radius:4px; color:white; padding: 15px 32px; border: 2px white; cursor: pointer;" onclick="sket()">SKET</button>
+		<button style="background-color:#80ced6; border-radius:4px; color:white; padding: 15px 32px; border: 2px white; cursor: pointer;" onclick="peta()">PETA</button>
+		<button style="background-color:#80ced6; border-radius:4px; color:white; padding: 15px 32px; border: 2px white; cursor: pointer; " onclick="setup()">MENGUMPULKAN</button>
+		<button style="background-color:#80ced6; border-radius:4px; color:white; padding: 15px 32px; border: 2px white; cursor: pointer; " onclick="training()">TRAIN</button>
+		
+	
+		
+		
+		<br>
+		
+  </body>
+</html>

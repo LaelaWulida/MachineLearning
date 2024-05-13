@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?><events>
+	<event>
+		<name>onLeave</name>
+		<label>on Lose Focus</label>
+		<group>Object - custom</group>
+	</event>
+</events>

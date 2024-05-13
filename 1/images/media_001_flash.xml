@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?><!--
+'*	media_001_flash.xml
+'*	Copyright (c) Websoft, 2006.  All rights reserved.
+--><params>
+	<object>
+		<label>Flash-movie</label>
+		<width>320</width>
+		<height>240</height>
+		<description>Flash-movie</description>
+		<state_extension>false</state_extension>
+	</object>
+    <page name="Main" w="260" h="220">
+		<param type="edit" id="hidden.label.file" text="" def="File" x="10" y="-50" w="1" h="1"/>
+		<param type="edit" id="hidden.label.url" text="" def="URL" x="10" y="-50" w="1" h="1"/>
+		<param type="edit" id="hidden.label.code" text="" def="Code" x="10" y="-50" w="1" h="1"/>
+
+		<param type="label" text="Source" x="10" y="10" w="120" h="13"/>
+		<param type="select" id="source" text="" def="file" x="130" y="8" w="120" h="13">
+			<items>
+				<item id="file" label="File">
+					<events>
+						<event name="selendok" target="lab_flash_uri" action="enable"/>
+						<event name="selendok" target="flash_uri" action="enable"/>
+						<event name="selendok" target="lab_flash_url" action="disable"/>
+						<event name="selendok" target="flash_url" action="disable"/>
+					</events>
+				</item>
+				<item id="url" label="Link">
+					<events>
+						<event name="selendok" target="lab_flash_uri" action="disable"/>
+						<event name="selendok" target="flash_uri" action="disable"/>
+						<event name="selendok" target="lab_flash_url" action="enable"/>
+						<event name="selendok" target="flash_url" action="enable"/>
+					</events>
+				</item>
+			</items>
+		</param>
+		
+		<param type="label" id="lab_flash_uri" text="File" x="10" y="26" w="120" h="13"/>
+		<param type="file" id="flash_uri" text="" def="" x="130" y="24" w="103" h="13" ext="Flash (SWF)|*.swf|All files|*.*"/>
+		<param type="label" id="lab_flash_url" text="URL" x="10" y="42" w="120" h="13"/>
+		<param type="edit" id="flash_url" text="" def="" x="130" y="40" w="120" h="13"/>
+
+		<param type="label" text="Window mode (wmode):" x="10" y="58" w="120" h="13"/>
+		<param type="select" id="flash_wmode" text="" def="transparent" x="130" y="56" w="120" h="13">
+			<items>
+				<item id="window" label="Opaque, on top of all layers">
+					<events>
+						<event name="selendok" target="lab_flash_bgcolor" action="enable"/>
+						<event name="selendok" target="flash_bgcolor" action="enable"/>
+					</events>
+				</item>
+				<item id="transparent" label="Transparent layer">
+					<events>
+						<event name="selendok" target="lab_flash_bgcolor" action="disable"/>
+						<event name="selendok" target="flash_bgcolor" action="disable"/>
+					</events>
+				</item>
+				<item id="opaque" label="Opaque layer">
+					<events>
+						<event name="selendok" target="lab_flash_bgcolor" action="enable"/>
+						<event name="selendok" target="flash_bgcolor" action="enable"/>
+					</events>
+				</item>
+			</items>
+		</param>
+		<param type="label" id="lab_flash_bgcolor" text="Fill color" x="10" y="74" w="120" h="13"/>
+		<param type="color" id="flash_bgcolor" text="" def="#FFFFFF" x="130" y="72" w="40" h="13"/>
+	</page>
+    <page name="Parameters" w="260" h="220">
+		<param type="label" id="lab_param_list" text="Parameters" x="10" y="10" w="120" h="13"/>
+		<param type="list" id="param_list" text="" def="" x="10" y="8" w="240" h="100">
+			<page w="260" h="70" name="Parameter">
+				<param type="label" text="Parameter" x="10" y="10" w="120" h="13"/>
+				<param type="edit" id="a_param" text="Parameter" def="" x="130" y="8" w="120" h="13"/>
+				<param type="label" text="Value" x="10" y="26" w="120" h="13"/>
+				<param type="edit" id="a_param_value" text="Value" def="" x="130" y="24" w="120" h="13"/>
+			</page>
+		</param>
+		<param type="label" text="FlashVars" x="10" y="120" w="120" h="13"/>
+		<param type="edit" id="flash_vars" text="" def="" x="130" y="118" w="120" h="13"/>
+	</page>
+	<methods>
+		<method name="Constructor" label="_Constructor" access="private">
+            <params>
+            </params>
+            <body>
+                <![CDATA[function Constructor(argobj)
+                {
+					var oCurObj = CLO[argobj.pid];
+					var jCurObjDiv = $(oCurObj.div);
+					var jContainer = jCurObjDiv.find(".container");
+					var sPath = (oCurObj.jxParams.find("source").text()=="file") ? oCurObj.jxParams.find("flash_uri").text() : oCurObj.jxParams.find("flash_url").text();
+					var sWMode = oCurObj.jxParams.find("flash_wmode").text();
+					var oParams = { "quality": "high", "wmode": sWMode };
+					if(sWMode!="transparent") oParams.bgcolor = oCurObj.jxParams.find("flash_bgcolor").text();
+					oCurObj.jxParams.find("param_list > item").each(function ()
+					{
+						oParams[$(this).children("a_param").text()] = $(this).children("a_param_value").text();
+					});
+					var sFVars = oCurObj.jxParams.find("flash_vars").text();
+					if(sFVars!="") oParams.flashvars = sFVars;
+					var oFlash = new CLFlash(
+					{
+						container: jContainer,
+						sPath: sPath,
+						nWidth: jContainer.innerWidth(),
+						nHeight: jContainer.innerHeight(),
+						oParams: oParams
+					});
+					oCurObj.data = { jFPlayer: oFlash.jFPlayer };
+					return true;
+				}]]>
+			</body>
+		</method>
+		<method name="Play" label="PLAY" access="public">
+			<params>
+			</params>
+			<body>
+				<![CDATA[function Play(argobj)
+				{
+					var oCurObj = CLO[argobj.pid];
+					if(oCurObj==null) return false;
+					try
+					{
+						if(!oCurObj.jFPlayer.IsPlaying()) oCurObj.jFPlayer.Play();
+					}
+					catch(e) {}
+					return true;
+				}]]>
+			</body>
+		</method>
+		<method name="Stop" label="STOP" access="public">
+			<params>
+			</params>
+			<body>
+				<![CDATA[function Stop(argobj)
+				{
+ 					var oCurObj = CLO[argobj.pid];
+					if(oCurObj==null) return false;
+					try
+					{
+						if(oCurObj.jFPlayer.IsPlaying()) oCurObj.jFPlayer.Stop();
+					}
+					catch(e) {}
+					return true;
+				}]]>
+			</body>
+		</method>
+		<method name="Rewind" label="REWIND" access="public">
+			<params>
+			</params>
+			<body>
+				<![CDATA[function Rewind(argobj)
+				{
+					var oCurObj = CLO[argobj.pid];
+					if(oCurObj==null) return false;
+					try
+					{
+						if(oCurObj.jFPlayer.IsPlaying()) oCurObj.jFPlayer.Stop();
+						oCurObj.jFPlayer.Rewind();
+					}
+					catch(e) {}
+					return true;
+				}]]>
+			</body>
+		</method>
+		<method name="Pause" label="PAUSE" access="public">
+			<params>
+			</params>
+			<body>
+				<![CDATA[function Pause(argobj)
+				{
+					var oCurObj = CLO[argobj.pid];
+					if(oCurObj==null) return false;
+					try
+					{
+						if(oCurObj.jFPlayer.IsPlaying()) oCurObj.jFPlayer.StopPlay();
+					}
+					catch(e) {}
+					return true;
+				}]]>
+			</body>
+		</method>
+		<method name="Continue" label="CONTINUE" access="public">
+			<params>
+			</params>
+			<body>
+				<![CDATA[function Continue(argobj)
+				{
+					var oCurObj = CLO[argobj.pid];
+					if(oCurObj==null) return false;
+					try
+					{
+						if(!oCurObj.jFPlayer.IsPlaying()) oCurObj.jFPlayer.Play();
+					}
+					catch(e) {}
+					return true;
+				}]]>
+			</body>
+		</method>
+	</methods>
+</params>

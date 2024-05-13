@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?><!--
+'*	009_storage.xml
+'*	Copyright (c) Websoft, 2013.  All rights reserved.
+--><params>
+	<object>
+		<label>Additional files</label>
+		<width>200</width>
+		<height>100</height>
+		<description>Storage for additional files</description>
+		<state_extension>false</state_extension>
+	</object>
+	<page name="Parameters" w="240" h="160">
+		<param type="edit" id="hidden.label.1" text="" def="Additional files" x="10" y="-50" w="1" h="1"/>
+		<param type="edit" id="hidden.label.2" text="" def="(hidden object)" x="10" y="-50" w="1" h="1"/>
+		
+		<param type="label" id="" text="Files" def="" x="10" y="9" w="68" h="13"/>
+		<param type="list" id="files" text="" def="no" x="10" y="9" w="219" h="139">
+			<page name="File" w="260" h="50">
+				<param type="label" text="File" x="10" y="10" w="60" h="13"/>
+				<param type="file" id="file_uri" text="File" def="" x="70" y="9" w="163" h="13"/>
+			</page>
+		</param>
+	</page>
+</params>

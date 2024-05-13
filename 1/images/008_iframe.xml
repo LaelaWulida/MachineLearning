@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?><!--
+'*	008_iframe.xml
+'*	Copyright (c) Websoft, 2007.  All rights reserved.
+--><params>
+	<object>
+		<label>IFRAME for external URL</label>
+		<width>400</width>
+		<height>400</height>
+		<description>Embedded IFRAME to open external URL</description>
+		<state_extension>false</state_extension>
+	</object>
+	<page name="Main" w="320" h="140">
+		<param type="edit" id="hidden.label.external" text="" def="External" x="10" y="-50" w="1" h="1"/>
+		<param type="edit" id="hidden.label.file" text="" def="file" x="10" y="-50" w="1" h="1"/>
+		<param type="edit" id="hidden.label.url" text="" def="URL" x="10" y="-50" w="1" h="1"/>
+
+		<param type="label" text=" Source" x="10" y="10" w="120" h="13"/>
+		<param type="select" id="src_type" text="" def="url" x="130" y="8" w="58" h="13">
+			<items>
+				<item id="url" label="URL">
+					<events>
+						<event name="selendok" target="uri" action="hide"/>
+						<event name="selendok" target="url" action="show"/>
+					</events>
+				</item>
+				<item id="file" label="File">
+					<events>
+						<event name="selendok" target="uri" action="show"/>
+						<event name="selendok" target="url" action="hide"/>
+					</events>
+				</item>
+			</items>
+		</param>
+		<param type="file" id="uri" text="" def="" x="190" y="8" w="103" h="13"/>
+		<param type="edit" id="url" text="" def="http://" x="190" y="8" w="120" h="13"/>
+
+		<param type="label" text="Scroll" x="10" y="26" w="120" h="13"/>
+		<param type="select" id="scrolling" text="" def="auto" x="130" y="24" w="180" h="13">
+			<items>
+				<item id="auto" label="Auto"/>
+				<item id="yes" label="Always active"/>
+				<item id="no" label="Always inactive"/>
+			</items>
+		</param>
+		<param type="label" text="Border" x="10" y="42" w="120" h="13"/>
+		<param type="select" id="border_style" text="" def="none" x="130" y="40" w="118" h="13">
+			<items>
+				<item id="none" label="None">
+                    <events>
+                        <event name="selendok" target="border_width" action="disable"/>
+                        <event name="selendok" target="lab_border_width_px" action="disable"/>
+                        <event name="selendok" target="border_color" action="disable"/>
+                    </events>					
+				</item>
+				<item id="solid" label="Solid">
+                    <events>
+                        <event name="selendok" target="border_width" action="enable"/>
+                        <event name="selendok" target="lab_border_width_px" action="enable"/>
+                        <event name="selendok" target="border_color" action="enable"/>
+                    </events>					
+				</item>
+				<item id="dotted" label="Dotted">
+                    <events>
+                        <event name="selendok" target="border_width" action="enable"/>
+                        <event name="selendok" target="lab_border_width_px" action="enable"/>
+                        <event name="selendok" target="border_color" action="enable"/>
+                    </events>					
+				</item>
+				<item id="dashed" label="Dashed">
+                    <events>
+                        <event name="selendok" target="border_width" action="enable"/>
+                        <event name="selendok" target="lab_border_width_px" action="enable"/>
+                        <event name="selendok" target="border_color" action="enable"/>
+                    </events>					
+				</item>
+				<item id="double" label="Double">
+                    <events>
+                        <event name="selendok" target="border_width" action="enable"/>
+                        <event name="selendok" target="lab_border_width_px" action="enable"/>
+                        <event name="selendok" target="border_color" action="enable"/>
+                    </events>					
+				</item>
+				<item id="ridge" label="Ridge">
+                    <events>
+                        <event name="selendok" target="border_width" action="enable"/>
+                        <event name="selendok" target="lab_border_width_px" action="enable"/>
+                        <event name="selendok" target="border_color" action="enable"/>
+                    </events>					
+				</item>
+				<item id="groove" label="Groove">
+                    <events>
+                        <event name="selendok" target="border_width" action="enable"/>
+                        <event name="selendok" target="lab_border_width_px" action="enable"/>
+                        <event name="selendok" target="border_color" action="enable"/>
+                    </events>					
+				</item>
+				<item id="inset" label="Inset">
+                    <events>
+                        <event name="selendok" target="border_width" action="enable"/>
+                        <event name="selendok" target="lab_border_width_px" action="enable"/>
+                        <event name="selendok" target="border_color" action="enable"/>
+                    </events>					
+				</item>
+				<item id="outset" label="Outset">
+                    <events>
+                        <event name="selendok" target="border_width" action="enable"/>
+                        <event name="selendok" target="lab_border_width_px" action="enable"/>
+                        <event name="selendok" target="border_color" action="enable"/>
+                    </events>					
+				</item>
+			</items>
+		</param>
+		<param type="spinner" id="border_width" text="" def="2" x="250" y="40" w="32" h="13" min="0" max="99"/>
+		<param type="label" id="lab_border_width_px" text="px" x="285" y="42" w="20" h="13"/>
+		<param type="color" id="border_color" text="" def="#999999" x="250" y="56" w="40" h="13"/>
+    </page>
+	<methods>
+		<method name="ReplaceSource" label="REPLACE SOURCE" access="public">
+            <params>
+				<param name="newurl" label="New URL"/>
+			</params>
+            <body>
+                <![CDATA[function ReplaceSource(argobj)
+                {
+                    if(argobj.pid==null || argobj.newurl==null) return false;
+					if(argobj.newurl=="") return false;
+					var sNewURL = argobj.newurl;
+					try
+					{
+						sNewURL = ReplacePropertiesInStr(sNewURL);
+						sNewURL = ReplaceVariablesInStr(sNewURL);
+					}
+					catch(e) {}
+					var oCurObj = document.getElementById(argobj.pid + "_IFRAME");
+					if(oCurObj==null) return false;
+					oCurObj.src = sNewURL;
+ 					return true;
+				}]]>
+			</body>
+		</method>
+	</methods>
+</params>

@@ -1,0 +1,156 @@
+<html>
+	<head>
+		<script src="../module.js"></script>
+		<script src="../courseimages/jquery.js"></script>
+		<script>
+			let targetLabel='A'; //penamaan label
+			let model;
+			let backgroundImage;
+			let status;
+			let notes = {
+				C: 261.6256,
+				D: 293.6648,
+				E: 329.6276,
+				F: 349.2282,
+				G: 391.9954,
+				A: 440.0000,
+				B: 493.8833
+			}
+			let env, wave;
+			
+			//membuat fungsi awal
+			function setup(){
+				status = "collecting";
+				let cnv = createCanvas(800,600); //membuat canvas
+				background(230);
+				
+				//buat garis pembatas
+				let w = width / 2;
+				let h = height / 2;
+				
+				line(w,0,w,height);
+				line(0,h,width,h);
+				
+				cnv.mousePressed(playSound); //jika menekan canvas maka akan memanggil suara
+				env = new p5.Envelope(); //mengontrol volume
+				//mengatur(attackTime, [decayTime], [susRatio], [releaseTime])
+				env.setADSR(0.05, 0.1, 0.5, 1);
+				env.setRange(1.2, 0); //mengatur jangkauan envelope
+				
+				//membuat objek gelombang suara
+				wave = new p5.Oscillator();
+				
+				wave.setType('sine'); //diatur sebagai gelombang sinusoidal
+				wave.start();
+				wave.freq(440); //mengatur frekuensi
+				wave.amp(env); //mengatur envelope
+				
+				//membuat dan memberi nama konstanta/objek baru
+				const options = {
+					input : ['x', 'y'],
+					output: ['label'],
+					task : 'classification',
+					debug : true
+				};
+				//memanggil model
+				model = ml5.neuralNetwork(options, ready);
+				console.log(model);
+				
+			}
+			
+			function playSound(){
+				wave.start();
+				env.play(wave);
+			}
+			
+			function ready(){console.log('model is ready')}
+			
+			//memanggil label jika keyboard ditekan
+			function keyPressed(){
+				targetLabel = key.toUpperCase(); //huruf  besar
+			}
+			
+			//memanggil data jika mouse ditekan
+			function mousePressed(){
+				let x = mouseX;
+				let y = mouseY;
+				ellipse(x,y,30);
+				textAlign(CENTER,CENTER);
+				textSize(15);
+				text(targetLabel,x,y);
+				
+				//memanggil suara
+				wave.freq(notes[targetLabel]);
+				env.play();
+				
+				//memanggil data training
+				if (status=='training'){
+					console.log(status); //mencetak nilai status
+					model.classify({x:mouseX,y:mouseY},getResult); //memanggil model, mengklasifikasi data
+				}
+				//pengumpulan data
+				if (status=='collecting'){
+				//membuat objek target
+					let target = {
+						label: targetLabel
+					}
+					console.log(status); //mencetak nilai status
+					model.addData({x: mouseX, y: mouseY},{label: targetLabel}); //menambah data latihan
+				}else {
+					model.classify({x:mouseX,y:mouseY},getResult); //mengklasifikasi data
+					console.log(status); //mencetak nilai status
+				}	
+			}
+			
+			//mengklasifikasi data
+			function training(){
+				if (status = 'training'){
+				model.normalizeData(); //normalisasi
+				const options = {
+					epochs : 100
+				}
+				model.train(options, ongoing, finish); //cara untuk melatih model
+				}
+			}
+			
+			function ongoing(){}
+			
+			//menampilkan pesan ketika proses training selesai
+			function finish(){console.log('training is finished')}
+			
+			//membuat fungsi prediksi
+			function predict(){
+				status = "predicting";
+			}
+			
+			//untuk mengelola output 
+			function getResult(error, result){
+			//jika error maka akan bernilai undefined
+				if (error){
+					console.error(error);
+					return;
+				}
+				console.log(result[0].label); //mencetak label
+				stroke(0);
+				fill(255, 204, 0);
+				let x = mouseX;
+				let y = mouseY;
+				ellipse(x,y,30);
+				fill(0);
+				noStroke();
+				textAlign(CENTER,CENTER);
+				textSize(15);
+				text(result[0].label,mouseX,mouseY);
+				
+			}
+			
+			
+			
+		</script>
+	</head>
+	
+	<body>
+		<button style="background-color:#80ced6; border-radius:4px; color:white; padding: 15px 32px; border: 2px white; cursor: pointer; " onclick="setup()">MENGUMPULKAN</button>
+		<button style="background-color:#80ced6; border-radius:4px; color:white; padding: 15px 32px; border: 2px white; cursor: pointer; " onclick="training()">TRAIN</button>
+	</body>
+</html>

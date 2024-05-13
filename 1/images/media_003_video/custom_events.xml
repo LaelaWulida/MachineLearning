@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?><events>
+	<event>
+		<name>onChangePlayState</name>
+		<label>on Change Play State</label>
+		<group>Object - custom</group>
+	</event>
+	<event>
+		<name>onPlayBegin</name>
+		<label>on Play Begin</label>
+		<group>Object - custom</group>
+	</event>
+	<event>
+		<name>onPlayPause</name>
+		<label>on Play Paused</label>
+		<group>Object - custom</group>
+	</event>
+	<event>
+		<name>onPlayResume</name>
+		<label>on Play Resumed</label>
+		<group>Object - custom</group>
+	</event>
+	<event>
+		<name>onTickTimer</name>
+		<label>on Play Tick</label>
+		<group>Object - custom</group>
+	</event>
+	<event>
+		<name>onPositionChange</name>
+		<label>on Position Changed</label>
+		<group>Object - custom</group>
+	</event>
+	<event>
+		<name>onMediaEnded</name>
+		<label>on End Of Media</label>
+		<group>Object - custom</group>
+	</event>
+</events>

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src='https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.8.0/p5.min.js'></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.8.0/addons/p5.dom.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.5.11/addons/p5.sound.min.js"></script>
+		<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    </head>
+    <body>
+        <canvas id="myCanvas" width="100%" height="240"></canvas><br>    
+        <script>
+		
+			let widthscreen = window.innerWidth;
+			
+			var s1 = function(sketch) {
+			
+				var triangle;
+				sketch.preload = function() {
+					triangle = sketch.loadImage('p1.png',sketch.setup);
+					console.log(triangle);
+				}
+				
+				function patch(){}
+				
+                var picture;
+                var canvas;
+				let match;
+                sketch.setup = function() {
+                    canvas = sketch.createCanvas(200,200);
+                    canvas.position((widthscreen/2-380),20);
+					sketch.background(200);
+                    canvas.drop(sketch.showPicture);
+                };
+                
+                sketch.showPicture = function(file){
+					match=false;
+                    picture=sketch.createImg(file.data,"");
+                    picture.hide();			
+                    setTimeout(sketch.draw, 100);
+					if (file.name=="p4.png"){alert('Tempat terlalu besar')};
+                    console.log(file.name,match);
+                };
+                
+                sketch.draw = function() {
+                    sketch.background(200);
+                    if ((picture)&&(match)){
+                        sketch.image(picture,0,0,200,200);
+                    } else {
+						sketch.image(triangle,0,0,200,200);
+					}
+                };
+            };
+            var myp5_1 = new p5(s1, 'p5sketch');
+            
+            var s2 = function(sketch) {
+			
+				var triangle;
+				sketch.preload = function() {
+					triangle = sketch.loadImage('p3.png');
+					console.log(triangle);
+				}
+				
+                var picture;
+                var canvas;
+				let match;
+                sketch.setup = function() {
+                    canvas = sketch.createCanvas(200,200);
+                    canvas.position((widthscreen/2-100),20);
+                    canvas.drop(sketch.showPicture);
+                };
+                
+                sketch.showPicture = function(file){
+					match=false;
+                    picture=sketch.createImg(file.data,"");
+                    picture.hide();
+                    setTimeout(sketch.draw, 100);
+					if (file.name=="p4.png"){alert('Tempat kurang besar')};
+                    console.log(file.name);
+                };
+                
+                sketch.draw = function() {
+                    sketch.background(200);
+                    if ((picture)&&(match)){
+						sketch.image(picture, 0, 0, 200, 200);
+                    } 
+					else {
+						sketch.image(triangle,0,0,200,200);
+					}
+                };
+            };
+            var myp5_2 = new p5(s2, 'p5sketch');
+			
+			var s3 = function(sketch) {
+			
+				var triangle;
+				sketch.preload = function() {
+					triangle = sketch.loadImage('p2.png');
+					console.log(triangle);
+				}
+				
+                var picture;
+                var canvas;
+				let match;
+                sketch.setup = function() {
+                    canvas = sketch.createCanvas(200,200);
+                    canvas.position((widthscreen/2+180),20);
+                    canvas.drop(sketch.showPicture);
+                };
+                
+                sketch.showPicture = function(file){
+					match=false;
+                    picture=sketch.createImg(file.data,"");
+                    picture.hide();
+                    setTimeout(sketch.draw, 100);
+					if (file.name=="p4.png"){match=true;};
+                    console.log(file.name);
+                };
+                
+                sketch.draw = function() {
+                    sketch.background(200);
+                    if ((picture)&&(match)){
+						sketch.image(picture, 0, 0, 200, 200);
+                    } 
+					else {
+						sketch.image(triangle,0,0,200,200);
+					}
+                };
+            };
+            var myp5_3 = new p5(s3, 'p5sketch');
+            
+        </script>
+		<table align="center">
+			<tr>
+				<td><image src="p4.png" height="200px"></image></td>
+			</tr>
+		</table>
+    </body>
+</html>

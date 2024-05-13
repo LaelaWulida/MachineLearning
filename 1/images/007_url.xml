@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?><!--
+'*	007_url.xml
+'*	Copyright (c) Websoft, 2006.  All rights reserved.
+--><params>
+	<object>
+		<label>External URL</label>
+		<width>32</width>
+		<height>32</height>
+		<description>External URL to open in new browser window</description>
+		<default_color_bg>bg_color</default_color_bg>
+		<state_extension>false</state_extension>
+	</object>
+	<page name="Main" w="320" h="200">
+		<param type="label" id="lab_n1_img" text="Icon" x="10" y="10" w="120" h="11"/>
+		<param type="select" id="icon_type" text="" def="standard" x="130" y="8" w="118" h="13">
+            <items>
+                <item id="standard" label="Standard ">
+                    <events>
+                        <event name="selendok" target="bg_color" action="enable"/>
+                        <event name="selendok" target="n1_img" action="disable"/>
+                    </events>
+                </item>
+                <item id="custom" label="Custom">
+                    <events>
+                        <event name="selendok" target="bg_color" action="disable"/>
+                        <event name="selendok" target="n1_img" action="enable"/>
+                    </events>
+                </item>
+			</items>
+		</param>
+        <param type="color" id="bg_color" text="" def="#0080C0" x="250" y="8" w="40" h="13"/>
+
+		<param type="file" id="n1_img" text="" def="" x="130" y="24" w="163" h="13" ext="Images (*.png;*.jpg;*.jpeg;*.gif)|*.png;*.jpg;*.jpeg;*.gif|PNG (*.png)|*.png|JPEG (*.jpg;*.jpeg)|*.jpg;*.jpeg|GIF (*.gif)|*.gif|All files (*.*)|*.*|||"/>
+
+		<param type="label" text="URL" x="10" y="42" w="120" h="13"/>
+		<param type="edit" id="jump_url" text="" def="http://" x="130" y="40" w="180" h="13"/>
+
+		<param type="label" text="Tooltip" x="10" y="58" w="120" h="13"/>
+		<param type="edit" id="title" text="" def="Open in new window" x="130" y="56" w="180" h="13"/>
+
+		<param type="label" text="Window size" x="10" y="74" w="120" h="11"/>
+		<param type="spinner" id="wx" text="" def="800" x="130" y="72" w="32" h="13" min="0" max="9999"/>
+		<param type="label" text="x" x="175" y="74" w="15" h="11"/>
+		<param type="spinner" id="wy" text="" def="600" x="190" y="72" w="32" h="13" min="0" max="9999"/>
+		<param type="label" text="px" x="225" y="74" w="30" h="11"/>
+		
+		<param type="check" id="wtoolbar" text="Enable window toolbar" def="no" x="10" y="90" w="300" h="13"/>
+		<param type="check" id="wlocation" text="Enable window address bar" def="no" x="10" y="106" w="300" h="13"/>
+		<param type="check" id="wstatus" text="Enable window status bar" def="no" x="10" y="122" w="300" h="13"/>
+		<param type="check" id="wmenubar" text="Enable menu panel" def="no" x="10" y="138" w="300" h="13"/>
+		<param type="check" id="wresize" text="Enable window resize" def="no" x="10" y="154" w="300" h="13"/>
+		<param type="check" id="wscroll" text="Enable window scrollbars" def="no" x="10" y="170" w="300" h="13"/>
+    </page>
+	<methods>
+		<method name="Constructor" label="_Constructor" access="private">
+			<params>
+			</params>
+			<body>
+			<![CDATA[function Constructor(argobj)
+			{
+				var oCurObj = CLO[argobj.pid];
+				var jCurObjDiv = $(oCurObj.div);
+				if(CL.oBrowser.sBrowser=="courselab")
+				{
+					jCurObjDiv.find(".cl-pic-link").removeAttr("onclick").on("click", function () { oCurObj.CallMethod({ sMethod: "OpenLink" }) });
+				}
+				return true;
+			}]]>
+			</body>
+		</method>
+		<method name="OpenLink" label="_OpenLink" access="private">
+			<params>
+			</params>
+			<body>
+			<![CDATA[function OpenLink(argobj)
+			{
+				var oCurObj = CLO[argobj.pid];
+				if(CL.oBrowser.sBrowser=="courselab")
+				{
+					alert(oCurObj.jxParams.find("jump_url").text() + "\n" + $(".cl-lang-strings > .cl-lang-external-url-disabled").text());
+				}
+				return true;
+			}]]>
+			</body>
+		</method>
+	</methods>
+</params>
